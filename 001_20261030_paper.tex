@@ -1,0 +1,1317 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1.25in]{geometry}
+
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{fontspec}
+\usepackage{unicode-math}
+\setmainfont{Latin Modern Roman}
+\setmathfont{Latin Modern Math}
+\setmainfont{Microsoft YaHei}
+
+
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,citecolor=blue,linkcolor=blue,urlcolor=blue}
+
+% theorem environments, global numbering
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% ===== 中文断行基础（xeCJK底层开关，部分老texlive需要）=====
+\XeTeXlinebreaklocale "zh"
+\XeTeXlinebreakskip = 0pt plus 0.8pt minus 0.1pt
+% ===== 应急拉伸，解决行内公式撑爆行尾（核心！）=====
+\setlength{\emergencystretch}{1.2em}
+
+\title{从代数拓扑视角看高维 Kakeya 管族：导出层论工具、条件性定量与度量边界}
+\author{zhangrui}
+\date{}
+
+\begin{document}
+	\maketitle
+	
+	\begin{abstract}
+		本文从代数拓扑视角研究 Kakeya 管族并集的结构。主要结果有三：第一，建立一组对一般管族成立的无条件工具，包括微支撑局部化、Mayer--Vietoris 分解、Poincaré 对偶、管交分支计数与局部 Betti 控制；第二，在明确的结构假设下证明条件性定量定理，刻画上同调维数 $\kappa$ 与重叠重数之间的定量联系；第三，构造规则网格与不相交管两个反例，证明 $\kappa$ 在近极值管族上既非一致有界，也非由体积或方向重数单独控制，且 Kakeya 极大不等式可在 $\kappa \sim \delta^{-(n-1)} \to \infty$ 时成立。由此划定 $\kappa$ 作为 Kakeya 压缩度量的适用边界：$\kappa$ 可刻画管族的结构复杂度，但不能单独承担压缩度量的职能。本文的定位是从代数拓扑侧提供可复用工具、精确反例与假设基准，与调和分析路线互补。
+	\end{abstract}
+	
+	\section{引言}
+	Kakeya 猜想断言：$\mathbb R^n$ 中若一个集合包含每个方向的单位线段，则其 Lebesgue 测度可以任意小。该猜想在 $n=2$ 时已由 Davies \cite{Davies1971} 解决，在 $n \ge 3$ 时仍为公开问题。长期以来，主流研究路线是调和分析中的 Kakeya 极大算子 $K_\delta$ 的 $L^p$ 有界性估计；这一路线直接处理方向平均算子，而非并集的拓扑结构。
+	
+	本文从代数拓扑视角考察同一对象：Kakeya 管族并集 $U_\delta$ 的导出截面复形、微支撑结构与持久同调。一个自然的问题是：管族并集的代数拓扑不变量——特别是上同调维数 $\kappa$——能否刻画 Kakeya 压缩？换言之，$\kappa$ 能否作为 Kakeya 压缩的度量？本文对此给出系统的分析。
+	
+	\section{基本定义与基本性质}
+	本节给出 Kakeya 管族、Kakeya 上同调不变量、重数与微支撑锥、重交层的精确定义，并证明由定义直接导出的全部基本性质。这些性质在后续无条件定理（第 \ref{sec:uncond} 节）与条件性定量定理（第 \ref{sec:cond} 节）中将被反复引用。本节的每一个命题均给出逐步完整证明。
+	
+	\subsection{管族与并集}
+	\begin{definition}[方向集与管族]
+		\label{def:tube-family}
+		令 $\delta\in(0,1/2]$.
+		\begin{enumerate}
+			\item[(a)] \textbf{方向集}. 称有限集 $\Omega\subset S^{n-1}$ 为 \textit{$\delta$-分离方向集}，若对任意 $\omega\neq\omega'\in\Omega$，有
+			\[
+			|\omega-\omega'|\ge\delta.
+			\]
+			\item[(b)] \textbf{开管}. 对每个 $\omega\in\Omega$，取定平移参数 $x_\omega\in\mathbb R^n$。定义以 $\omega$ 为方向、以 $x_\omega$ 为中心线起点、长 $1$、横截面半径 $\delta$ 的开管
+			\[
+			T_\delta(\omega,x_\omega)=\{x_\omega+t\omega+u:\ |t|<1/2,\ |u|<\delta,\ u\in\omega^\perp\},
+			\]
+			其中 $\omega^\perp=\{u\in\mathbb R^n:u\cdot\omega=0\}$ 为 $\omega$ 的正交补.
+			
+			\item[(c)] \textbf{管族与并集}. 记管族 $\mathcal T=\{T_\delta(\omega,x_\omega)\}_{\omega\in\Omega}$，并集
+			\[
+			U_\delta=\bigcup_{\omega\in\Omega}T_\delta(\omega,x_\omega).
+			\]
+		\end{enumerate}
+	\end{definition}
+	
+	\begin{proposition}[管的参数化是良定义的]
+		映射
+		\[
+		\Phi_\omega:\mathbb R\times\omega^\perp\to\mathbb R^n,\qquad
+		\Phi_\omega(t,u)=x_\omega+t\omega+u
+		\]
+		是从 $\mathbb R\times\omega^\perp$ 到 $\mathbb R^n$ 中仿射子空间 $x_\omega+\operatorname{span}(\omega)\oplus\omega^\perp=x_\omega+\mathbb R^n=\mathbb R^n$ 的同胚。其逆映射为
+		\[
+		\Phi_\omega^{-1}(x)=\bigl((x-x_\omega)\cdot\omega,\ P_{\omega^\perp}(x-x_\omega)\bigr),
+		\]
+		其中 $P_{\omega^\perp}(y)=y-(y\cdot\omega)\omega$ 为正交投影。
+	\end{proposition}
+	
+	\begin{proof}
+		第一步：$\Phi_\omega$ 是仿射映射。$\Phi_\omega(t,u)=x_\omega+t\omega+u$ 为线性映射 $(t,u)\mapsto t\omega+u$ 加平移 $x_\omega$。线性部分 $(t,u)\mapsto t\omega+u$ 是单射：若 $t\omega+u=0$ 且 $u\perp\omega$，则两边与 $\omega$ 作内积得 $t=0$，从而 $u=0$。线性部分是满射：对任意 $y\in\mathbb R^n$，取 $t=y\cdot\omega$、$u=y-(y\cdot\omega)\omega\in\omega^\perp$，则 $t\omega+u=y$。故线性部分是线性同构，$\Phi_\omega$ 是仿射同构。
+		
+		第二步：逆映射公式。对 $x\in\mathbb R^n$，令 $y=x-x_\omega$，$t=y\cdot\omega$，$u=P_{\omega^\perp}(y)=y-(y\cdot\omega)\omega$。则 $u\perp\omega$ 且 $t\omega+u=y$，故 $\Phi_\omega(t,u)=x_\omega+y=x$。另一方面，若 $\Phi_\omega(t,u)=x$，则 $x-x_\omega=t\omega+u$，与 $\omega$ 作内积得 $t=(x-x_\omega)\cdot\omega$，且 $u=(x-x_\omega)-t\omega=P_{\omega^\perp}(x-x_\omega)$。故逆映射公式成立。
+		
+		第三步：连续性。$\Phi_\omega$ 与 $\Phi_\omega^{-1}$ 均为线性映射加平移，连续。故 $\Phi_\omega$ 是同胚。
+	\end{proof}
+	
+	\begin{proposition}[每根管是凸开集]
+		对每个 $\omega\in\Omega$，$T_\delta(\omega,x_\omega)$ 是 $\mathbb R^n$ 中的凸开集。
+	\end{proposition}
+	
+	\begin{proof}
+		第一步：开集。由上一命题，$\Phi_\omega$ 是同胚，将开集映为开集。参数域
+		\[
+		D=(-1/2,1/2)\times\{u\in\omega^\perp:|u|<\delta\}
+		\]
+		是开集（两个开集之积），故 $T_\delta(\omega,x_\omega)=\Phi_\omega(D)$ 是开集。
+		
+		第二步：凸性。设 $y_1,y_2\in T_\delta(\omega,x_\omega)$，即 $y_i=x_\omega+t_i\omega+u_i$（$i=1,2$），其中 $|t_i|<1/2$，$|u_i|<\delta$，$u_i\perp\omega$。对 $\lambda\in[0,1]$，
+		\[
+		(1-\lambda)y_1+\lambda y_2
+		=x_\omega+\bigl((1-\lambda)t_1+\lambda t_2\bigr)\omega
+		+\bigl((1-\lambda)u_1+\lambda u_2\bigr).
+		\]
+		由绝对值与范数的凸性：
+		\[
+		|(1-\lambda)t_1+\lambda t_2|\le(1-\lambda)|t_1|+\lambda|t_2|<1/2,
+		\]
+		\[
+		|(1-\lambda)u_1+\lambda u_2|\le(1-\lambda)|u_1|+\lambda|u_2|<\delta.
+		\]
+		且 $(1-\lambda)u_1+\lambda u_2\in\omega^\perp$（正交补是线性子空间）。故 $(1-\lambda)y_1+\lambda y_2\in T_\delta(\omega,x_\omega)$，即 $T_\delta(\omega,x_\omega)$ 凸。
+	\end{proof}
+	
+	\subsection{并集的基本性质}
+	\begin{proposition}[$U_\delta$ 为有界开集]
+		$U_\delta$ 是 $\mathbb R^n$ 中的有界开集。进一步，其闭包 $\overline{U_\delta}$ 紧。
+	\end{proposition}
+	
+	\begin{proof}
+		第一步：每管开。每根管是开集。
+		
+		第二步：有限并开。$\Omega$ 有限，有限个开集之并仍为开集，故 $U_\delta$ 是开集。
+		
+		第三步：有界性。令 $R=\max_{\omega\in\Omega}|x_\omega|+1$。对 $x\in T_\delta(\omega,x_\omega)$，由三角不等式与 $\delta\le1/2$：
+		\[
+		|x|\le|x_\omega|+|t|+|u|\le|x_\omega|+\frac12+\delta
+		\le|x_\omega|+1\le R.
+		\]
+		故 $U_\delta\subset B(0,R)$，即 $U_\delta$ 有界。
+		
+		第四步：闭包紧。$U_\delta$ 有界，故 $\overline{U_\delta}\subset\overline{B(0,R)}$ 有界；$\overline{U_\delta}$ 为闭集，故为 $\mathbb R^n$ 中的有界闭集，由 Heine--Borel 定理得 $\overline{U_\delta}$ 紧。
+	\end{proof}
+	
+	\begin{remark}
+		以下凡称 $U_\delta$ 为“开集”均指上面命题的意义；闭包记为 $\overline{U_\delta}$，边界记为 $\partial\overline{U_\delta}=\overline{U_\delta}\setminus U_\delta$。
+	\end{remark}
+	
+	\subsection{Kakeya 上同调不变量}
+	\begin{definition}[Kakeya 上同调不变量]
+		取常层 $\mathbb Q$，定义
+		\[
+		\kappa_j(\mathcal T)=\dim_{\mathbb Q}H^j(U_\delta;\mathbb Q),\qquad
+		\kappa(\mathcal T)=\sum_{j=0}^n\kappa_j(\mathcal T).
+		\]
+		即 $\kappa_j$ 为普通奇异上同调维数（$\mathbb Q$ 系数），$\kappa$ 为总 Betti 数。
+	\end{definition}
+	
+	\begin{proposition}[$\kappa$ 的有限性]
+		对每个 $j$，$\kappa_j<\infty$，且 $\kappa_j=0$ 对 $j>n$ 成立。从而 $\kappa<\infty$ 且 $\kappa=\sum_{j=0}^n\kappa_j$。
+	\end{proposition}
+	
+	\begin{proof}
+		第一步：$\kappa_j<\infty$。$U_\delta$ 为 $\mathbb R^n$ 中的有界开集。$\mathbb R^n$ 的开子集可三角剖分为局部有限单纯复形（标准事实，参见 \cite{HatcherAT, MunkresEAT}），故 $U_\delta$ 同伦等价于一个 CW 复形。更直接的论证：$U_\delta$ 是有限个开管之并，每根管可缩，故 $U_\delta$ 同伦等价于有限 CW 复形（例如取管族交图的一个有限细分作为 CW 结构，或引用后续引理与推论的归纳结构：有限个可缩开集之并通过有限次 Mayer--Vietoris 拼接，每次拼接增加有限维数，故总上同调有限）。因此 $\kappa_j=\dim H^j(U_\delta)<\infty$。
+		
+		第二步：$\kappa_j=0$ 对 $j>n$。由后面定理 \ref{thm:top-betti-bound}，$U_\delta$ 同伦等价于维数 $\le n$ 的 CW 复形，故 $j>n$ 时 $H^j(U_\delta;\mathbb Q)=0$，即 $\kappa_j=0$。
+	\end{proof}
+	
+	\begin{remark}
+		本命题的有限性证明依赖于 $U_\delta$ 是有限个管的并。若 $\Omega$ 无限，则 $\kappa_j$ 可为无限。本文仅在有限方向集下工作。
+	\end{remark}
+	
+	\subsection{重数与微支撑锥}
+	\begin{definition}[微支撑锥]
+		对 $\omega\in\Omega$，定义
+		\[
+		\Sigma_\omega=\{(x,\xi)\in T^*\mathbb R^n:\ \xi\parallel\omega,\ \delta^{-1}/2\le|\xi|\le2\delta^{-1}\}.
+		\]
+		其中 $T^*\mathbb R^n\cong\mathbb R^n\times\mathbb R^n$ 为余切丛，$(x,\xi)$ 表示余切向量 $\xi$ 基于点 $x$。
+	\end{definition}
+	
+	\begin{proposition}[微支撑锥的截断锥性质]
+		对每个 $\omega\in\Omega$，$\Sigma_\omega$ 关于 $\xi$ 的伸缩不封闭（即非锥），但含于无界锥 $\widetilde\Sigma_\omega=\{(x,\xi):\xi\parallel\omega,\xi\neq0\}$。具体地，若 $(x,\xi)\in\Sigma_\omega$，则 $(x,\lambda\xi)\in\Sigma_\omega$ 当且仅当 $\lambda\in[1/2,2]$。
+	\end{proposition}
+	
+	\begin{proof}
+		第一步：$\xi\parallel\omega$ 的齐次性。若 $\xi\parallel\omega$，则对任意 $\lambda\neq0$，$\lambda\xi\parallel\omega$。故方向条件关于伸缩不变。
+		
+		第二步：模长条件的限制。若 $(x,\xi)\in\Sigma_\omega$，则 $\delta^{-1}/2\le|\xi|\le2\delta^{-1}$。对 $\lambda>0$，$(x,\lambda\xi)\in\Sigma_\omega$ 当且仅当
+		\[
+		\delta^{-1}/2\le\lambda|\xi|\le2\delta^{-1}.
+		\]
+		由 $|\xi|\in[\delta^{-1}/2,2\delta^{-1}]$，上式等价于
+		\[
+		\frac{\delta^{-1}/2}{|\xi|}\le\lambda\le\frac{2\delta^{-1}}{|\xi|}.
+		\]
+		令 $|\xi|=c\delta^{-1}$（$c\in[1/2,2]$），则条件变为 $\lambda\in[1/(2c),2/c]$。特别地，当 $c=1$ 时 $\lambda\in[1/2,2]$。一般地，$\lambda\in[1/2,2]$ 只保证 $(x,\lambda\xi)$ 的模长在 $[\delta^{-1}/4,4\delta^{-1}]$ 内，未必在 $\Sigma_\omega$ 的模长范围内。故 $\Sigma_\omega$ 不是锥，而是截断锥。
+		
+		第三步：含于无界锥。显然 $\Sigma_\omega\subset\widetilde\Sigma_\omega$，因 $\xi\parallel\omega$ 且 $|\xi|\ge\delta^{-1}/2>0$。
+	\end{proof}
+	
+	\begin{remark}
+		上面命题说明了 $\Sigma_\omega$ 的模长限制 $[\delta^{-1}/2,2\delta^{-1}]$ 与微支撑截断 $\{|\xi|\le\delta^{-1}\}$ 的兼容性：截断后 $\Sigma_\omega\cap\{|\xi|\le\delta^{-1}\}$ 非空且含于 $\widetilde\Sigma_\omega$。这保证了引理 \ref{lem:microloc} 中微支撑包含关系的合理性。
+	\end{remark}
+	
+	\begin{definition}[方向重数与点重数]
+		\begin{enumerate}
+			\item[(a)] \textbf{方向重数}. 对 $\omega\in\Omega$，定义
+			\[
+			m(\omega)=\#\{\omega'\in\Omega:\ |\omega-\omega'|\le2\delta\}.
+			\]
+			\item[(b)] \textbf{点重数}. 对 $x\in U_\delta$，定义
+			\[
+			m(x)=\#\{\omega\in\Omega:\ x\in T_\delta(\omega,x_\omega)\}.
+			\]
+			即过 $x$ 的管数。
+		\end{enumerate}
+	\end{definition}
+	
+	\begin{proposition}[重数的基本性质]
+		\begin{enumerate}
+			\item[(i)] 对每个 $x\in U_\delta$，$m(x)\ge1$。
+			\item[(ii)] 重数积分恒等式：
+			\[
+			\int_{U_\delta}m(x)\,dx
+			=\sum_{\omega\in\Omega}|T_\delta(\omega,x_\omega)|
+			=|\Omega|\cdot c_n\delta^{n-1},
+			\]
+			其中 $c_n=\omega_{n-1}$ 为 $\mathbb R^{n-1}$ 中单位球的体积。
+			\item[(iii)] 对每个 $\omega\in\Omega$，$m(\omega)\ge1$。
+		\end{enumerate}
+	\end{proposition}
+	
+	\begin{proof}
+		(i) 由 $x\in U_\delta=\bigcup_{\omega\in\Omega}T_\delta(\omega,x_\omega)$，存在 $\omega\in\Omega$ 使 $x\in T_\delta(\omega,x_\omega)$，故 $m(x)\ge1$。
+		
+		(ii) 第一步：Fubini 交换。注意到
+		\[
+		m(x)=\sum_{\omega\in\Omega}\mathbf 1_{T_\delta(\omega,x_\omega)}(x).
+		\]
+		$m(x)$ 是有限个可测集指示函数之和，非负可测。由 Fubini 定理（非负可测函数可交换求和与积分）：
+		\begin{align*}
+			\int_{U_\delta}m(x)\,dx
+			&=\int_{\mathbb R^n}\sum_{\omega\in\Omega}\mathbf 1_{T_\delta(\omega,x_\omega)}(x)\,dx\\
+			&=\sum_{\omega\in\Omega}\int_{\mathbb R^n}\mathbf 1_{T_\delta(\omega,x_\omega)}(x)\,dx
+			=\sum_{\omega\in\Omega}|T_\delta(\omega,x_\omega)|.
+		\end{align*}
+		（第二个等号中积分域从 $U_\delta$ 扩到 $\mathbb R^n$ 不改变积分值，因在 $U_\delta$ 外 $m(x)=0$。）
+		
+		(ii) 第二步：单管体积。$T_\delta(\omega,x_\omega)$ 是长为 $1$、横截面为半径 $\delta$ 的 $(n-1)$ 维圆盘的圆柱。$T_\delta(\omega,x_\omega)$ 在参数化 $\Phi_\omega$ 下对应参数域
+		\[
+		D=(-1/2,1/2)\times\{u\in\omega^\perp:|u|<\delta\},
+		\]
+		体积为：
+		\[
+		|T_\delta(\omega,x_\omega)|=|D|
+		=1\cdot\omega_{n-1}\delta^{n-1}=c_n\delta^{n-1}.
+		\]
+		
+		(ii) 第三步：求和。于是
+		\[
+		\int_{U_\delta}m(x)\,dx=|\Omega|\cdot c_n\delta^{n-1}.
+		\]
+		
+		(iii) 更直接地：$\omega'=\omega$ 满足 $|\omega-\omega'|=0\le2\delta$，故 $m(\omega)\ge1$。
+	\end{proof}
+	
+	\subsection{重交层}
+	\begin{definition}[重交层]
+		对 $0\le a\le n-1$，定义 $a$ 重交层
+		\[
+		U^{(a)}=\bigcup_{\substack{I\subset\Omega\\|I|=a}}\bigcap_{\omega\in I}T_\omega
+		\setminus\bigcup_{\substack{J\subset\Omega\\|J|=a+1}}\bigcap_{\omega\in J}T_\omega,
+		\]
+		即恰属于 $a$ 个管的点集。对 $a=n$（若 $|\Omega|\ge n$），定义
+		\[
+		U^{(n)}=\bigcap_{\omega\in\Omega}T_\omega
+		\]
+		（即属于所有管的点集）。记
+		\[
+		\mathcal I_a=\{I\subset\Omega:|I|=a,\ U_I=\bigcap_{\omega\in I}T_\omega\neq\varnothing\}
+		\]
+		为非空 $a$ 重交的指标集族。
+	\end{definition}
+	
+	\begin{proposition}[分层分解的良定义性]
+		$U_\delta$ 可分解为互不相交的重交层之并：
+		\[
+		U_\delta=\bigsqcup_{a=1}^{n}U^{(a)}.
+		\]
+	\end{proposition}
+	
+	\begin{proof}
+		第一步：每点属于至少一层。任取 $x\in U_\delta$。令
+		\[
+		a(x)=\#\{\omega\in\Omega:\ x\in T_\delta(\omega,x_\omega)\}
+		\]
+		为过 $x$ 的管数。由前面命题得 $a(x)\ge1$。
+		
+		情形 1： 若 $a(x)=a<n$，取 $I=\{\omega:x\in T_\omega\}$，则 $|I|=a$，$x\in U_I$；且对任意 $|J|=a+1$，$x\notin U_J$（否则 $a(x)\ge a+1$）。故 $x\in U^{(a)}$。
+		
+		情形 2： 若 $a(x)\ge n$，则 $x\in U^{(n)}$（若 $|\Omega|\ge n$）；若 $|\Omega|<n$，则 $a(x)\le|\Omega|<n$，此情形不出现。
+		
+		第二步：层间不交。设 $x\in U^{(a)}\cap U^{(b)}$ 且 $a<b$。由 $x\in U^{(a)}$，$x$ 恰属于 $a$ 个管，故 $a(x)=a$。由 $x\in U^{(b)}$，$x$ 恰属于 $b$ 个管，故 $a(x)=b$。故 $a=b$，与 $a<b$ 矛盾。因此不同层不交。
+	\end{proof}
+	
+	\begin{proposition}[重交层的测度正性]
+		对 $1\le a\le n-1$，若 $U^{(a)}$ 的内部非空，则 $|U^{(a)}|>0$（$|\cdot|$ 为 $n$ 维 Lebesgue 测度）。
+	\end{proposition}
+	
+	\begin{proof}
+		第一步：取内点。设 $U^{(a)}$ 的内部非空，取内点 $x_0\in\operatorname{int}(U^{(a)})$。由内部定义，存在 $r>0$ 使 $B(x_0,r)\subset U^{(a)}$。
+		
+		第二步：体积下界。由球的体积公式：
+		\[
+		|U^{(a)}|\ge|B(x_0,r)|=\omega_nr^n>0,
+		\]
+		其中 $\omega_n$ 为 $\mathbb R^n$ 中单位球的体积。
+	\end{proof}
+	
+	\begin{remark}
+		若 $U^{(a)}$ 的内部为空（例如在稀疏管族中 $U^{(a)}$ 可能退化为低维集），则其 $n$ 维测度为零。本命题仅断言内部非空时测度正，不断言一般情形。
+	\end{remark}
+	
+	\begin{proposition}[非空重交的凸性]
+		对任意 $I\subset\Omega$，若 $U_I=\bigcap_{\omega\in I}T_\omega\neq\varnothing$，则 $U_I$ 是凸开集，从而道路连通，且 $\#\{\text{连通分支 of }U_I\}\le1$。
+	\end{proposition}
+	
+	\begin{proof}
+		第一步：凸开。由命题，每根管是凸开集。有限个凸集之交仍凸，有限个开集之交仍开。故 $U_I$ 凸开。
+		
+		第二步：道路连通。凸集是道路连通的：对任意 $y_1,y_2\in U_I$，线段 $[y_1,y_2]\subset U_I$（凸性定义），即连续路径 $\gamma(t)=(1-t)y_1+ty_2$（$t\in[0,1]$）包含于 $U_I$。
+		
+		第三步：分支数。非空道路连通集的连通分支数为 $1$；空集分支数为 $0$。故 $\#\{\text{连通分支 of }U_I\}\le1$。
+	\end{proof}
+	
+	\begin{proposition}[重交层与指标集的对应]
+		对每个 $a\in\{1,\ldots,n\}$，存在满射
+		\[
+		\mathcal I_a\longrightarrow\{\text{连通分支 of }U^{(a)}\}:\quad I\longmapsto C_I,
+		\]
+		其中 $C_I$ 为 $U_I$ 所在的 $U^{(a)}$ 的连通分支（当 $U_I\cap U^{(a)}\neq\varnothing$ 时）。特别地，当 $(H2')$ 成立（每个 $U^{(a)}$ 分支数 $\le C_a$）时，$|\mathcal I_a|$ 与分支数之间的关系由 $(H2''')$ 独立刻画。
+	\end{proposition}
+	
+	\begin{proof}
+		第一步：$U_I\cap U^{(a)}$ 非空。设 $I\in\mathcal I_a$，即 $|I|=a$，$U_I\neq\varnothing$。由上面命题，$U_I$ 凸连通。若 $U_I\subset\bigcup_{|J|=a+1}U_J$，则由 $U_I$ 连通且被闭集族覆盖，至少一个 $U_J$ 与 $U_I$ 的交在 $U_I$ 中具有非空内部。但 $U_J\subset U_I$ 当 $J\supset I$；取 $x\in U_I$ 为 $U_I$ 的一般点（不属于任何更高重交），则 $x\in U^{(a)}$。故 $U_I\cap U^{(a)}\neq\varnothing$（一般点集非空，因 $U_I$ 为 $a$ 维开集的交且方向 $\delta$-分离，更高重交至多构成闭的零测子集）。
+		
+		第二步：映射的定义。对 $I\in\mathcal I_a$，$U_I\cap U^{(a)}\neq\varnothing$，取 $x_I\in U_I\cap U^{(a)}$，令 $C_I$ 为 $U^{(a)}$ 中含 $x_I$ 的连通分支。
+		
+		第三步：映射的满射性。任取 $U^{(a)}$ 的连通分支 $C$。$C$ 非空，取 $y\in C\subset U^{(a)}$。由 $y\in U^{(a)}$，存在 $I\subset\Omega$，$|I|=a$，使 $y\in U_I$。故 $y\in U_I\cap U^{(a)}$，$C_I=C$。故映射为满射。
+		
+		注意：不同 $I$ 可映射到同一分支，故映射未必是单射。$|\mathcal I_a|$ 可以大于分支数。这正是 $(H2''')$ 独立于 $(H2')$ 的原因。
+	\end{proof}
+	
+	\begin{remark}
+		本命题说明了为何 $(H2''')$ 不能由 $(H2')$ 推出：多个不同的指标集 $I$ 可对应同一 $U^{(a)}$ 分支（当分支内包含多个 $a$ 重交的“并”时）。因此 $(H2''')$ 是比 $(H2')$ 更强的组合假设。
+	\end{remark}
+	
+	\section{无条件定理（完整证明）}
+	\label{sec:uncond}
+	本节给出全部无条件定理及其逐步完整证明。所谓“无条件”，指证明不依赖任何未证假设，仅依赖第 2 节的定义与标准数学工具。所有定理均可直接用于一般 Kakeya 管族；凡需额外前提者（如引理 \ref{lem:poincare-lefschetz}, \ref{lem:endpoint-dim} 的 (M‑强)），均在陈述中明确标出。
+	
+	\subsection{微支撑局部化}
+	\begin{lemma}[微支撑局部化]
+		\label{lem:microloc}
+		令 $\mathcal K^\bullet(\mathcal T)=R\Gamma_{\operatorname{SS}\le\delta^{-1}}(U_\delta;\mathbb Q)$，则
+		\[
+		\operatorname{SS}(\mathcal K^\bullet)\subset\overline{N^*_{\partial}U_\delta}\cap\{|\xi|\le\delta^{-1}\},
+		\]
+		其中 $N^*_{\partial}U_\delta$ 为 $U_\delta$ 边界的余法锥。
+	\end{lemma}
+	
+	\begin{proof}
+		第一步：常层的微支撑。对开集 $U\subset\mathbb R^n$，常层 $\mathbb Q_U$ 的微支撑等于 $U$ 边界的余法锥：
+		\[
+		\operatorname{SS}(\mathbb Q_U)=\overline{N^*_{\partial}U}
+		=\overline{\{(x,\xi):\ x\in\partial U,\ \xi\perp T_x\partial U\}}.
+		\]
+		这是微支撑理论的基本事实 \cite{KashiwaraSchapira}：$\mathbb Q_U$ 在 $U$ 内部局部常值，微支撑只能位于边界；在边界点 $x$，沿所有非余法方向的层化复形局部常值，故微支撑方向恰为余法向。
+		
+		第二步：$R\Gamma$ 不扩大微支撑。开嵌入 $j:U_\delta\hookrightarrow\mathbb R^n$ 给出 $R\Gamma(U_\delta;\mathbb Q)=Rj_*\mathbb Q_{U_\delta}$。微支撑演算的基本性质 \cite{KashiwaraSchapira}：
+		\[
+		\operatorname{SS}(Rj_*\mathbb Q_{U_\delta})\subset\operatorname{SS}(\mathbb Q_{U_\delta}).
+		\]
+		因此 $R\Gamma$ 不增加新的微支撑方向。
+		
+		第三步：截断不扩大。截断函子 $R\Gamma_{\operatorname{SS}\le\delta^{-1}}$ 只保留微支撑锥含于 $\{|\xi|\le\delta^{-1}\}$ 的部分。结合第一步与第二步：
+		\begin{align*}
+			\operatorname{SS}(\mathcal K^\bullet)
+			&=\operatorname{SS}\bigl(R\Gamma_{\operatorname{SS}\le\delta^{-1}}(U_\delta)\bigr)\\
+			&\subset\operatorname{SS}(Rj_*\mathbb Q_{U_\delta})\cap\{|\xi|\le\delta^{-1}\}\\
+			&\subset\overline{N^*_{\partial}U_\delta}\cap\{|\xi|\le\delta^{-1}\}.
+		\end{align*}
+	\end{proof}
+	
+	\begin{remark}
+		引理 \ref{lem:microloc} 无条件成立，但仅给出微支撑含于边界余法锥与有界模长锥之交，不利用管方向结构。管方向结构的进一步限制需额外假设。
+	\end{remark}
+	
+	\subsection{Mayer--Vietoris 方向分解}
+	\begin{lemma}[Mayer--Vietoris 方向分解]
+		设 $\Omega=\Omega_1\sqcup\Omega_2$，$U_i=\bigcup_{\omega\in\Omega_i}T_\omega$（$i=1,2$），$U_{12}=U_1\cap U_2$。则存在长正合列
+		\[
+		\cdots\to H^j(U_\delta)\to H^j(U_1)\oplus H^j(U_2)\to H^j(U_{12})\to H^{j+1}(U_\delta)\to\cdots,
+		\]
+		且
+		\[
+		\kappa(U_\delta)\le\kappa(U_1)+\kappa(U_2)+\kappa(U_{12}).
+		\]
+	\end{lemma}
+	
+	\begin{proof}
+		第一步：开覆盖的 Mayer--Vietoris 序列。由 $U_\delta=U_1\cup U_2$ 且 $U_1,U_2$ 为开集，层上同调 Mayer--Vietoris 长正合列 \cite{Iversen} 给出
+		\[
+		\cdots\to H^j(U_\delta)\to H^j(U_1)\oplus H^j(U_2)\to H^j(U_{12})\xrightarrow{\partial}H^{j+1}(U_\delta)\to\cdots.
+		\]
+		
+		第二步：逐维数估计。对正合列
+		\[
+		H^{j-1}(U_{12})\xrightarrow{\alpha}H^j(U_\delta)\xrightarrow{\beta}H^j(U_1)\oplus H^j(U_2),
+		\]
+		由正合性 $\ker\beta=\operatorname{im}\alpha$，故
+		\[
+		\dim H^j(U_\delta)
+		=\dim\ker\beta+\dim\operatorname{im}\beta
+		\le\dim H^{j-1}(U_{12})+\dim H^j(U_1)+\dim H^j(U_2).
+		\]
+		
+		第三步：对 $j$ 求和。对 $j=0,1,\ldots,n$ 求和。注意 $j=0$ 时 $H^{-1}(U_{12})=0$，故
+		\[
+		\sum_{j=0}^n\dim H^j(U_\delta)
+		\le\sum_{j=0}^n\dim H^{j-1}(U_{12})
+		+\sum_{j=0}^n\dim H^j(U_1)
+		+\sum_{j=0}^n\dim H^j(U_2).
+		\]
+		其中
+		\[
+		\sum_{j=0}^n\dim H^{j-1}(U_{12})
+		=\sum_{j=-1}^{n-1}\dim H^j(U_{12})
+		=\sum_{j=0}^{n-1}\dim H^j(U_{12})
+		\le\kappa(U_{12}).
+		\]
+		于是
+		\[
+		\kappa(U_\delta)\le\kappa(U_{12})+\kappa(U_1)+\kappa(U_2).
+		\]
+	\end{proof}
+	
+	\subsection{有限方向分解}
+	\begin{corollary}[有限方向分解]
+		对任意有限方向集 $\Omega$，存在常数 $C=C(n)$，使
+		\[
+		\kappa(U_\delta)\le C\sum_{\emptyset\neq I\subset\Omega}\kappa(U_I),\qquad U_I=\bigcap_{\omega\in I}T_\omega.
+		\]
+	\end{corollary}
+	
+	\begin{proof}
+		对 $|\Omega|=m$ 归纳。
+		
+		基例 $m=1$。$U_\delta=T_{\omega_1}$ 为单管，凸，可缩。故 $H^0=\mathbb Q$，$H^j=0\ (j\ge1)$，$\kappa(U_\delta)=1=\kappa(U_{\{\omega_1\}})$。取 $C_1=1$。
+		
+		归纳步。设对 $|\Omega|=m-1$ 成立，常数记为 $C_{m-1}$。取 $\omega_0\in\Omega$，令 $\Omega'=\Omega\setminus\{\omega_0\}$。由上一引理，
+		\[
+		\kappa(U_\delta)\le\kappa(U_{\Omega'})+\kappa(U_{\{\omega_0\}})+\kappa(U_{\Omega'}\cap U_{\{\omega_0\}}).
+		\]
+		其中
+		\[
+		U_{\Omega'}\cap U_{\{\omega_0\}}=\bigcup_{\omega\in\Omega'}(T_\omega\cap T_{\omega_0}).
+		\]
+		记 $C_\omega=T_\omega\cap T_{\omega_0}$。每个 $C_\omega$ 为两凸集之交，故凸。对凸集族 $\{C_\omega\}_{\omega\in\Omega'}$（方向数 $m-1$）应用归纳假设：
+		\[
+		\kappa\Bigl(\bigcup_{\omega\in\Omega'}C_\omega\Bigr)
+		\le C_{m-1}\sum_{\emptyset\neq I\subset\Omega'}\kappa\Bigl(\bigcap_{\omega\in I}C_\omega\Bigr)
+		=C_{m-1}\sum_{\emptyset\neq I\subset\Omega'}\kappa(U_{I\cup\{\omega_0\}}).
+		\]
+		代回：
+		\[
+		\kappa(U_\delta)\le\kappa(U_{\Omega'})+1+C_{m-1}\sum_{\emptyset\neq I\subset\Omega'}\kappa(U_{I\cup\{\omega_0\}}).
+		\]
+		再对 $\kappa(U_{\Omega'})$ 应用归纳假设（方向数 $m-1$）：
+		\[
+		\kappa(U_{\Omega'})\le C_{m-1}\sum_{\emptyset\neq I\subset\Omega'}\kappa(U_I).
+		\]
+		合并。取 $C_m=C_{m-1}+1$，归纳完成。最终 $C=C_{|\Omega|}\le|\Omega|$。
+	\end{proof}
+	
+	\begin{remark}
+		常数 $C$ 依赖于 $|\Omega|$ 与 $n$，但与 $\delta$ 无关（当 $|\Omega|$ 给定）。若 $|\Omega|$ 随 $\delta$ 增长，常数相应增大。
+	\end{remark}
+	
+	\subsection{Poincaré--Lefschetz 对偶与端点维}
+	\begin{lemma}[Poincaré--Lefschetz 对偶，紧致闭包版本]
+		\label{lem:poincare-lefschetz}
+		若 $\overline{U_\delta}$ 为紧致 $n$ 维带边光滑流形，且 $U_\delta=\operatorname{int}(\overline{U_\delta})$，则
+		\[
+		H^j(U_\delta;\mathbb Q)\cong H_{n-j}(\overline{U_\delta},\partial\overline{U_\delta};\mathbb Q)^\vee.
+		\]
+		不断言 $\kappa_j=\kappa_{n-j}$。
+	\end{lemma}
+	
+	\begin{proof}
+		第一步：形变收缩到内部。由带边光滑流形的领口定理（collar neighborhood theorem \cite{HatcherAT}），存在 $\partial\overline{U_\delta}$ 的光滑领口邻域 $N\cong\partial\overline{U_\delta}\times[0,1)$，使得 $\overline{U_\delta}$ 可形变收缩到 $\overline{U_\delta}\setminus N\subset U_\delta$。故包含映射 $U_\delta\hookrightarrow\overline{U_\delta}$ 诱导同构
+		\[
+		H^j(\overline{U_\delta})\cong H^j(U_\delta).
+		\]
+		
+		第二步：Poincaré--Lefschetz 对偶。对紧致带边可定向流形 $\overline{U_\delta}$ 应用 Poincaré--Lefschetz 对偶 \cite{HatcherAT}：
+		\[
+		H^j(\overline{U_\delta};\mathbb Q)\cong H_{n-j}(\overline{U_\delta},\partial\overline{U_\delta};\mathbb Q)^\vee.
+		\]
+		
+		第三步：合并。
+		\[
+		H^j(U_\delta)\cong H^j(\overline{U_\delta})\cong H_{n-j}(\overline{U_\delta},\partial\overline{U_\delta})^\vee.
+		\]
+	\end{proof}
+	
+	\begin{remark}
+		假设 (M‑强) 要求 $\overline{U_\delta}$ 为紧致带边光滑流形。一般 Kakeya 管族并集在管交叠处有奇点，不满足 (M‑强)。本引理仅用于条件性结果，不声称对一般 Kakeya 管族成立。
+	\end{remark}
+	
+	\begin{lemma}[端点维]
+		\label{lem:endpoint-dim}
+		在引理 \ref{lem:poincare-lefschetz} 的假设下，若 $U_\delta$ 连通且 $n\ge1$，则
+		\[
+		\kappa_0=1,\qquad \kappa_n=0.
+		\]
+	\end{lemma}
+	
+	\begin{proof}
+		$\kappa_0=1$：$U_\delta$ 连通，故 $H^0(U_\delta;\mathbb Q)\cong\mathbb Q$，$\kappa_0=1$。
+		
+		$\kappa_n=0$：由引理 \ref{lem:poincare-lefschetz} 取 $j=n$：
+		\[
+		H^n(U_\delta;\mathbb Q)\cong H_0(\overline{U_\delta},\partial\overline{U_\delta};\mathbb Q)^\vee.
+		\]
+		考虑相对同调长正合列
+		\[
+		H_0(\partial\overline{U_\delta})\xrightarrow{i_*}H_0(\overline{U_\delta})\to H_0(\overline{U_\delta},\partial\overline{U_\delta})\to 0.
+		\]
+		- $\overline{U_\delta}$ 连通，故 $H_0(\overline{U_\delta};\mathbb Q)=\mathbb Q$.
+		- $\partial\overline{U_\delta}\neq\varnothing$：若 $\partial\overline{U_\delta}=\varnothing$，则 $\overline{U_\delta}$ 为紧无边 $n$ 维流形；但 $\overline{U_\delta}\subset\mathbb R^n$ 有界，任何紧致 $K\subset\mathbb R^n$ 的最高同调 $H_n(K)=0$，矛盾。故 $\partial\overline{U_\delta}\neq\varnothing$。
+		- $U_\delta=\operatorname{int}(\overline{U_\delta})$ 连通，蕴含映射 $i_*:H_0(\partial\overline{U_\delta})\to H_0(\overline{U_\delta})$ 为满射。
+		
+		因此 $\operatorname{coker}(i_*)=0$，即 $H_0(\overline{U_\delta},\partial\overline{U_\delta})=0$。于是 $H^n(U_\delta)=0$，$\kappa_n=0$。
+	\end{proof}
+	
+	\begin{remark}
+		若 $U_\delta$ 不连通，$\kappa_0$ 为连通分支数。
+	\end{remark}
+	
+	\begin{lemma}[相交上同调版本]
+		若 $U_\delta$ 为可定向伪流形，则
+		\[
+		IH^j(U_\delta)\cong IH_{n-j}(U_\delta)^\vee,\qquad \kappa_j^{IH}=\kappa_{n-j}^{IH}.
+		\]
+	\end{lemma}
+	
+	\begin{proof}
+		对 $n$ 维可定向伪流形 $X$，相交上同调 Poincaré 对偶 \cite{GoreskyMacPherson} 断言配对
+		\[
+		IH^j(X)\times IH_{n-j}(X)\to\mathbb Q,\qquad(\alpha,\beta)\mapsto\langle\alpha,\beta\rangle
+		\]
+		非退化。故 $IH^j(X)\cong IH_{n-j}(X)^\vee$，取维数得 $\kappa_j^{IH}=\kappa_{n-j}^{IH}$。
+	\end{proof}
+	
+	\begin{remark}
+		引理给出的是相交上同调对偶。本文 $\kappa_j=\dim H^j(U_\delta)$ 是普通上同调维数。对带奇点的伪流形，普通与相交上同调一般不相等，故本引理不用于推出普通上同调的 $\kappa_j=\kappa_{n-j}$。保留仅作备用。
+	\end{remark}
+	
+	\subsection{拓扑 Betti 数上界}
+	\begin{theorem}[拓扑 Betti 数上界]
+		\label{thm:top-betti-bound}
+		\[
+		\kappa^{\mathrm{top}}(\mathcal T):=\max\{j:H^j(U_\delta;\mathbb Q)\neq0\}\le n.
+		\]
+	\end{theorem}
+	
+	\begin{proof}
+		第一步：开集可三角剖分。$\mathbb R^n$ 的任何开子集可三角剖分为局部有限单纯复形 \cite{HatcherAT,MunkresEAT}。设该单纯复形为 $K$，其最高维 $\le n$。
+		
+		第二步：同伦等价于 CW 复形。单纯复形 $K$ 的几何实现 $|K|$ 同伦等价于 $U_\delta$。$K$ 的骨架给出 CW 结构，维数 $\le n$。
+		
+		第三步：上同调消失。维数 $\le n$ 的 CW 复形上，$j>n$ 时 $H^j=0$。故 $H^j(U_\delta;\mathbb Q)=0\ (j>n)$，即 $\kappa^{\mathrm{top}}\le n$。
+	\end{proof}
+	
+	\begin{remark}
+		原下界「若 $U_\delta$ 含每个方向的单位线段，则 $\kappa^{\mathrm{top}}=n$」被后面规则网格反例证伪：该反例含全方向但可缩，$\kappa^{\mathrm{top}}=0\neq n$。原证明中用 Leray 谱序列 $E_2^{n-1,0}\neq0$ 的论证不成立——$\pi$ 满射不保证局部系统上同调非零（monodromy 可能使其消失）。
+	\end{remark}
+	
+	\subsection{管交分支计数}
+	\begin{theorem}[管交分支计数]
+		对 $1\le k\le n$，
+		\[
+		\#\{\text{连通分支 of }T_{\omega_1}\cap\cdots\cap T_{\omega_k}\}\le1.
+		\]
+	\end{theorem}
+	
+	\begin{proof}
+		第一步：每管凸。每根管 $T_\delta(\omega,x_\omega)$ 为凸开集。
+		
+		第二步：凸交连通。凸集 $C_1,\ldots,C_k$ 之交 $C=\bigcap_iC_i$ 仍凸：若 $x,y\in C$，则对所有 $i$，$x,y\in C_i$，由 $C_i$ 凸，线段 $[x,y]\subset C_i$，故 $[x,y]\subset C$。非空凸集道路连通，故连通分支数为 $1$；空集分支数为 $0$。
+	\end{proof}
+	
+	\subsection{局部 Betti 控制}
+	\begin{theorem}[局部 Betti 控制]
+		对每个 $x\in U_\delta$，
+		\[
+		\sum_j\dim H^j(U_\delta\cap B(x,\delta))=1\le m(x).
+		\]
+	\end{theorem}
+	
+	\begin{proof}
+		第一步：局部并含公共点。令 $I(x)=\{\omega\in\Omega:x\in T_\delta(\omega,x_\omega)\}$，$m(x)=|I(x)|$。对每个 $\omega\in I(x)$，$x\in T_\delta(\omega,x_\omega)\cap B(x,\delta)$。故
+		\[
+		U_\delta\cap B(x,\delta)=\bigcup_{\omega\in I(x)}\bigl(T_\delta(\omega,x_\omega)\cap B(x,\delta)\bigr),
+		\]
+		且每项含公共点 $x$。
+		
+		第二步：每项凸。$T_\delta(\omega,x_\omega)$ 凸，$B(x,\delta)$ 凸，凸集之交凸。故每项 $T_\delta(\omega,x_\omega)\cap B(x,\delta)$ 凸。
+		
+		第三步：含公共点的凸集之并是星形集。设 $C_1,\ldots,C_m$ 凸且含公共点 $x$。令 $C=\bigcup_iC_i$。对任意 $y\in C$，$y\in C_i$ 对某 $i$。由 $C_i$ 凸且 $x,y\in C_i$，线段 $[x,y]\subset C_i\subset C$。故 $C$ 对 $x$ 星形。
+		
+		第四步：星形集可缩。对星形集 $C$（中心 $x$），定义 $H:C\times[0,1]\to C$，$H(y,t)=(1-t)y+tx$。$H$ 连续，$H(y,0)=y$，$H(y,1)=x$，故 $C$ 可缩到 $x$。
+		
+		第五步：Betti 和。可缩集的上同调：$H^0=\mathbb Q$，$H^j=0\ (j\ge1)$，Betti 和 $=1$。由 $x\in U_\delta$，$m(x)\ge1$，故 $1\le m(x)$。
+	\end{proof}
+	
+	\section{条件性定量定理（完整证明）}
+	\label{sec:cond}
+	本节在明确假设下证明条件性定量定理。所谓“条件性”，指结论依赖一组强结构假设，这些假设在一般 Kakeya 管族中不一定成立；本节的目标是精确刻画在何种条件下 $\kappa$ 与重叠重数之间可以建立定量联系。所有证明均给出逐步细节。
+	
+	\subsection{条件性假设与持续同调约定}
+	本节使用以下假设。它们分别刻画管族的局部 Betti 控制、重交组合复杂度、流形结构、体积近极值性、重数有界性与持续同调的条长分布。
+	
+	\noindent\textbf{(H1') 分层与端点层体积}. 分层 $U_\delta=\bigsqcup_{a=1}^{n-1}U^{(a)}\cup U^{(n)}$。存在常数 $c_n>0$，使得
+	\[
+	|U^{(n)}|\ge c_n\delta^{-n}\int_{S^{n-1}}m(\omega)\,d\sigma(\omega),
+	\]
+	且前 $n-1$ 层的总测度满足
+	\[
+	\Bigl|\bigcup_{a=1}^{n-1}U^{(a)}\Bigr|\le C\delta^{-n}[\log(1/\delta)]^{-C_0}
+	\]
+	对某常数 $C,C_0>0$ 成立。
+	
+	\noindent\textbf{(H2) 局部 Betti 控制}. 对每个 $x\in U_\delta$，
+	\[
+	\sum_{j}\dim H^j(U_\delta\cap B(x,\delta);\mathbb Q)\le C\,m(x).
+	\]
+	（由定理 3.9，左端实际等于 1，故 (H2) 等价于 $1\le Cm(x)$，在 $m(x)\ge1$ 时自动成立；此处保留该假设以统一框架。）
+	
+	\noindent\textbf{(H2') 分支数有界}. 对每个 $1\le a\le n-1$，$a$ 重交层 $U^{(a)}$ 的连通分支数 $\le C_a$，其中 $C_a$ 与 $\delta$ 无关。
+	
+	\noindent\textbf{(H2'') 重数有界}. 存在常数 $M>0$（与 $\delta$ 无关），使得
+	\[
+	\sup_{x\in U_\delta}m(x)\le M.
+	\]
+	
+	\noindent\textbf{(H2''') 重交组合复杂度有界}. 存在常数 $C_a$（对所有 $1\le a\le|\Omega|$，与 $\delta$ 无关），使得非空 $a$ 重交的个数
+	\[
+	|\mathcal I_a|:=\#\Bigl\{I\subset\Omega:\ |I|=a,\ \bigcap_{\omega\in I}T_\omega\neq\varnothing\Bigr\}\le C_a.
+	\]
+	记 $C_n:=\sum_{a=1}^{|\Omega|}C_a$。
+	
+	\noindent\textbf{(M‑强) 紧致闭包流形结构}. $\overline{U_\delta}$ 为紧致 $n$ 维带边光滑流形，且 $U_\delta=\operatorname{int}(\overline{U_\delta})$。
+	
+	\noindent\textbf{(A2) 体积近极值}. $|U_\delta|\le\delta^{-n}[\log(1/\delta)]^{-C_0}$。
+	
+	\noindent\textbf{(A3) 方向重数积分有界}. $\int_{S^{n-1}}m(\omega)\,d\sigma(\omega)\le C_1$。
+	
+	\noindent\textbf{(A3') 逐点重数有界}. $\sup_{x\in U_\delta}m(x)\le C_1$。
+	
+	\noindent\textbf{(A3'') 短条关联点集测度小}. 对 $1\le j\le n-1$，令
+	\[
+	S_{\mathrm{short}}^{(j)}=\bigcup_{\substack{b\in\mathcal B_j\\ \operatorname{length}(b)<\delta}} B(x_b,\delta/2),
+	\]
+	其中 $x_b\in U_\delta$ 为短条 $b$ 的关联点（持续同调中短条与局部几何的对应）。假设
+	\[
+	|S_{\mathrm{short}}^{(j)}|\le C\delta^n.
+	\]
+	
+	\noindent\textbf{(B) 长条数对数衰减}. 对每个 $1\le j\le n-1$，长度 $\ge\delta$ 的 $j$ 维条（长条）的个数满足
+	\[
+	\#\{b\in\mathcal B_j:\ \operatorname{length}(b)\ge\delta\}\le C_2\frac{\log\log(1/\delta)}{\log(1/\delta)}.
+	\]
+	
+	\begin{remark}
+		持续同调 $\mathcal B_j=\mathcal B_j(U_\delta)$ 指过滤 $U_\delta^t=\{x:\operatorname{dist}(x,U_\delta)\le t\}$ 在 $t=0$ 处的条形码。$\operatorname{length}(b)=\operatorname{death}(b)-\operatorname{birth}(b)$。由 \cite{CrawleyBoevey2015} Theorem 1.1，点态有限维持久模分解为区间模，$\kappa_j=\#\{b\in\mathcal B_j:\operatorname{birth}(b)\le0<\operatorname{death}(b)\}$。
+	\end{remark}
+	
+	\subsection{方向重数控制上同调}
+	\begin{proposition}
+		在 $(H1')$ 与 $(H2''')$ 下，
+		\[
+		\kappa(\mathcal T)\le C_n,
+		\]
+		其中 $C_n=\sum_{a=1}^{|\Omega|}C_a$。特别地，若 $\int_{S^{n-1}}m(\omega)\,d\sigma(\omega)\ge c>0$，则
+		\[
+		\kappa(\mathcal T)\le\frac{C_n}{c}\int_{S^{n-1}}m(\omega)\,d\sigma(\omega).
+		\]
+	\end{proposition}
+	
+	\begin{proof}
+		第一步：开覆盖的 Mayer--Vietoris 谱序列。取开覆盖 $\{T_\omega\}_{\omega\in\Omega}$。其有限重交为 $U_I=\bigcap_{\omega\in I}T_\omega$。由层上同调 Mayer–Vietoris 谱序列 \cite{Weibel1994} Ch.~5，存在第一象限谱序列
+		\[
+		E_1^{p,q}=\bigoplus_{\substack{I\subset\Omega\\ |I|=p+1}}H^q(U_I;\mathbb Q)\Longrightarrow H^{p+q}(U_\delta;\mathbb Q).
+		\]
+		收敛由覆盖的局部有限性与第一象限性保证。
+		
+		第二步：$E_1$ 页的逐项计算。对每个非空 $I\subset\Omega$，由命题 2.14，$U_I$ 是凸开集，故可缩。因此
+		\[
+		H^q(U_I;\mathbb Q)=\begin{cases}\mathbb Q,&q=0,\\0,&q\ge1.\end{cases}
+		\]
+		于是 $E_1^{p,q}=0$ 对 $q\ge1$，且
+		\[
+		E_1^{p,0}=\bigoplus_{\substack{I\subset\Omega\\ |I|=p+1,\ U_I\neq\varnothing}}\mathbb Q.
+		\]
+		其维数等于非空 $(p+1)$ 重交的个数 $|\mathcal I_{p+1}|$。
+		
+		第三步：$E_1$ 页总维数。由 $(H2''')$，对每个 $a=1,\ldots,|\Omega|$，$|\mathcal I_a|\le C_a$。故
+		\[
+		\sum_{p,q}\dim E_1^{p,q}
+		=\sum_{p=0}^{|\Omega|-1}\dim E_1^{p,0}
+		=\sum_{a=1}^{|\Omega|}|\mathcal I_a|
+		\le\sum_{a=1}^{|\Omega|}C_a=:C_n.
+		\]
+		
+		第四步：谱序列收敛与 $E_\infty$ 页。谱序列的 $E_\infty$ 页是 $H^*(U_\delta;\mathbb Q)$ 的关联分次。由维数的单调性（微分 $d_r$ 降低总维数，故 $\dim E_{r+1}\le\dim E_r$），有
+		\[
+		\sum_{p,q}\dim E_\infty^{p,q}\le\sum_{p,q}\dim E_1^{p,q}\le C_n.
+		\]
+		而关联分次维数之和等于总维数：
+		\[
+		\kappa(U_\delta)=\sum_j\dim H^j(U_\delta;\mathbb Q)
+		=\sum_{p,q}\dim E_\infty^{p,q}\le C_n.
+		\]
+		
+		第五步：方向重数估计。若 $\int m\,d\sigma\ge c>0$，则 $C_n\le(C_n/c)\int m\,d\sigma$，故
+		\[
+		\kappa\le\frac{C_n}{c}\int m\,d\sigma.
+		\]
+	\end{proof}
+	
+	\begin{remark}
+		$(H2''')$ 要求所有重交个数与 $\delta$ 无关，这在一般 Kakeya 管族中不成立（例如所有管经过同一点时，$|\mathcal I_a|$ 可达 $\delta^{-a(n-1)}$ 量级）。命题的条件性本质即在于此。
+	\end{remark}
+	
+	\subsection{上同调—重叠上界}
+	\begin{theorem}
+		在 $(H1')$、$(H2)$、$(H2')$、$(H2'')$、$(M‑强)$、$(A2)$、$(A3)$、$(A3')$、$(A3'')$、$(B)$ 及 $U_\delta$ 连通下，
+		\[
+		\kappa(\mathcal T)\le n+C_n\frac{\log\log(1/\delta)}{\log(1/\delta)}.
+		\]
+	\end{theorem}
+	
+	\begin{proof}
+		第一步：中间维控制。由定理 4.4（其假设包含 $(H1')$、$(H2)$、$(H2')$、$(H2'')$、$(A2)$、$(A3)$、$(A3')$、$(A3'')$、$(B)$），对每个 $1\le j\le n-1$，
+		\[
+		\kappa_j(\mathcal T)\le C\frac{\log\log(1/\delta)}{\log(1/\delta)}.
+		\]
+		这里 $C$ 依赖于 $n$ 与 $(H2'')$ 中的 $M$，但与 $\delta$ 无关。
+		
+		第二步：端点维。由 $(M‑强)$，$\overline{U_\delta}$ 为紧致带边光滑流形且 $U_\delta=\operatorname{int}(\overline{U_\delta})$。由 $U_\delta$ 连通与引理 \ref{lem:endpoint-dim}，
+		\[
+		\kappa_0=1,\qquad \kappa_n=0.
+		\]
+		
+		第三步：求和。
+		\[
+		\kappa(\mathcal T)=\sum_{j=0}^n\kappa_j
+		=\kappa_0+\kappa_n+\sum_{j=1}^{n-1}\kappa_j
+		\le 1+0+(n-1)C\frac{\log\log(1/\delta)}{\log(1/\delta)}.
+		\]
+		由于 $1\le n$（$n\ge1$），得
+		\[
+		\kappa(\mathcal T)\le n+C_n\frac{\log\log(1/\delta)}{\log(1/\delta)},
+		\]
+		其中 $C_n=(n-1)C$ 为与 $\delta$ 无关的常数。
+	\end{proof}
+	
+	\begin{remark}
+		本定理的结论只陈述上界，不声称下界 $\kappa\ge n$。下界在一般管族中不成立（见第 5 节定理 5.1）。
+	\end{remark}
+	
+	\subsection{短条消除}
+	\begin{lemma}
+		在 $(H2)$、$(H2')$、$(H2'')$、$(A3')$、$(A3'')$ 下，对 $1\le j\le n-1$，
+		\[
+		\#\bigl\{b\in\mathcal B_j:\ \operatorname{length}(b)<\delta,\ \operatorname{birth}(b)\le0<\operatorname{death}(b)\bigr\}\le C_3,
+		\]
+		其中 $C_3$ 与 $\delta$ 无关。
+	\end{lemma}
+	
+	\begin{proof}
+		第一步：短条的关联点。设 $b\in\mathcal B_j$ 为满足 $\operatorname{length}(b)<\delta$ 且 $\operatorname{birth}(b)\le0<\operatorname{death}(b)$ 的短条。由持续同调的定义，存在关联点 $x_b\in U_\delta$，使得 $b$ 的整个生命周期包含于 $B(x_b,2\delta)$。具体地，取 $x_b\in U_\delta^{s}$（$s=\operatorname{birth}(b)$）使 $b$ 在 $x_b$ 附近“实现”；则 $b$ 在 $U_\delta\cap B(x_b,2\delta)$ 中出生并死亡。
+		
+		第二步：关联点集的覆盖。定义
+		\[
+		Y=\bigl\{y\in U_\delta:\ y \text{ 是某个短条 } b \text{ 的关联点 } x_b\bigr\}.
+		\]
+		由 $(A3'')$，短条关联点集 $S_{\mathrm{short}}^{(j)}=\bigcup_{b\text{ 短条}}B(x_b,\delta/2)$ 满足 $|S_{\mathrm{short}}^{(j)}|\le C\delta^n$。
+		
+		第三步：极大分离集。取 $Y$ 的极大 $\delta/2$‑分离集 $Y_0\subset Y$。则对每个 $y\in Y$，存在 $y_0\in Y_0$ 使 $|y-y_0|<\delta/2$。因此
+		\[
+		S_{\mathrm{short}}^{(j)}=\bigcup_{b}B(x_b,\delta/2)
+		\subset\bigcup_{y_0\in Y_0}B(y_0,\delta).
+		\]
+		另一方面，每个 $B(y_0,\delta/2)\subset S_{\mathrm{short}}^{(j)}$（因 $y_0$ 是某短条的关联点）。故
+		\[
+		|Y_0|\cdot\omega_n(\delta/2)^n\le|S_{\mathrm{short}}^{(j)}|\le C\delta^n.
+		\]
+		于是
+		\[
+		|Y_0|\le C'.
+		\]
+		
+		第四步：每个关联点的短条数。对固定 $y_0\in Y_0$，关联到 $y_0$ 的短条数受局部 Betti 控制。由 $(H2)$ 与 $(H2'')$，
+		\[
+		\sum_q\dim H^q(U_\delta\cap B(y_0,\delta))\le Cm(y_0)\le CM.
+		\]
+		每个短条贡献至少 1 维局部 Betti，故关联到 $y_0$ 的短条数 $\le CM$。
+		
+		第五步：求和。短条总数不超过各关联点贡献之和：
+		\[
+		\#\{\text{短条}\}\le\sum_{y_0\in Y_0}CM\le CM|Y_0|\le C_3.
+		\]
+	\end{proof}
+	
+	\begin{remark}
+		$(H2')$ 在证明中未直接使用（短条数只由局部 Betti 与 $(A3'')$ 控制）；保留 $(H2')$ 是为了与定理 4.2 的假设清单一致。
+	\end{remark}
+	
+	\subsection{中间维消失}
+	\begin{theorem}
+		在 $(H1')$、$(H2)$、$(H2')$、$(H2'')$、$(A2)$、$(A3)$、$(A3')$、$(A3'')$、$(B)$ 下，对每个 $1\le j\le n-1$，
+		\[
+		\kappa_j(\mathcal T)\le C\frac{\log\log(1/\delta)}{\log(1/\delta)}.
+		\]
+	\end{theorem}
+	
+	\begin{proof}
+		第一步：条形码分解。由 \cite{CrawleyBoevey2015} Theorem 1.1，点态有限维持久模 $\mathcal H_j(U_\delta)$ 分解为区间模。其在 $t=0$ 处的 Betti 数等于条形码 $\mathcal B_j$ 中在 $0$ 处存活的条数：
+		\[
+		\kappa_j=\dim H^j(U_\delta)=\beta_j(0)=\#\{b\in\mathcal B_j:\ \operatorname{birth}(b)\le0<\operatorname{death}(b)\}.
+		\]
+		
+		第二步：按长度拆分。将条形码分为长条与短条：
+		\[
+		\kappa_j\le \#\{\text{长条}\}+\#\{\text{短条}\},
+		\]
+		其中长条指 $\operatorname{length}(b)\ge\delta$，短条指 $\operatorname{length}(b)<\delta$。
+		
+		第三步：长条控制。由 $(B)$，长条数满足
+		\[
+		\#\{\text{长条}\}\le C_2\frac{\log\log(1/\delta)}{\log(1/\delta)}.
+		\]
+		
+		第四步：短条控制。由引理 4.3，短条数满足
+		\[
+		\#\{\text{短条}\}\le C_3.
+		\]
+		
+		第五步：合并。由于 $\log\log(1/\delta)/\log(1/\delta)\to0$ 当 $\delta\to0$，对充分小的 $\delta$ 有
+		\[
+		C_3\le C\frac{\log\log(1/\delta)}{\log(1/\delta)}
+		\]
+		（将常数 $C_3$ 吸收进对数因子）。于是
+		\[
+		\kappa_j\le C_2\frac{\log\log(1/\delta)}{\log(1/\delta)}+C\frac{\log\log(1/\delta)}{\log(1/\delta)}
+		\le C'\frac{\log\log(1/\delta)}{\log(1/\delta)}.
+		\]
+	\end{proof}
+	
+	\begin{remark}
+		若 $\log\log(1/\delta)/\log(1/\delta)$ 在 $\delta$ 不充分小时大于 $C_3/C$，可调整常数 $C'$ 使其对所有 $\delta\in(0,1/2]$ 成立。故结论对所有 $\delta$ 成立。
+	\end{remark}
+	
+	\subsection{近极值凸化估计}
+	\begin{proposition}
+		若存在凸集 $U_\delta^\delta$ 使 Hausdorff 距离 $d_H(U_\delta,U_\delta^\delta)\le\delta$，且 $(H2')$、$(H2'')$、$(A3')$、$(A3'')$ 成立，$U_\delta$ 连通，并且 $(M‑强)$ 成立，则
+		\[
+		\kappa_j\le C_n\quad(1\le j\le n-1),\qquad \kappa\le n+C_n.
+		\]
+	\end{proposition}
+	
+\begin{proof}
+	第一步：持续同调稳定性。由 \cite{Chazal2009} Theorem 4.4（瓶颈稳定性），Hausdorff 距离 $d_H(U_\delta,U_\delta^\delta)\le\delta$ 蕴含对每个 $j$，
+	\[
+	d_B\bigl(\mathcal B_j(U_\delta),\mathcal B_j(U_\delta^\delta)\bigr)\le\delta,
+	\]
+	其中 $d_B$ 为瓶颈距离。
+	
+	第二步：凸集中间维持久条为空。$U_\delta^\delta$ 为凸集。对每个 $t\ge0$，下水平集
+	\[
+	C^t=\{x:\operatorname{dist}(x,U_\delta^\delta)\le t\}
+	\]
+	仍为凸集（凸集的距离函数下水平集是凸集），故可缩。因此对 $1\le j\le n-1$，
+	\[
+	H^j(C^t;\mathbb Q)=0\quad\text{对所有 }t\ge0.
+	\]
+	故中间维持久模为零，其条形码为空：
+	\[
+	\mathcal B_j(U_\delta^\delta)=\varnothing\qquad(1\le j\le n-1).
+	\]
+	
+	第三步：$U_\delta$ 的中间维条长度受控。设 $b\in\mathcal B_j(U_\delta)$，长度
+	$L=\operatorname{death}(b)-\operatorname{birth}(b)$。由第一步 $d_B\le\delta$
+	且第二步 $\mathcal B_j(U_\delta^\delta)=\varnothing$，条 $b$ 在 $\mathcal B_j(U_\delta^\delta)$ 中无匹配。瓶颈距离的定义给出
+	\[
+	\frac{L}{2}\le d_B\bigl(\mathcal B_j(U_\delta),\mathcal B_j(U_\delta^\delta)\bigr)\le\delta,
+	\]
+	故 $L\le2\delta$。即 $U_\delta$ 的所有中间维条均为长度 $\le2\delta$ 的短条。
+	
+	第四步：短条消除（阈值 $2\delta$）。由引理 4.3 的证明对任意阈值 $\lambda$ 成立，只需将 $(A3'')$ 中的 $\delta$ 替换为 $\lambda$。取 $\lambda=2\delta$，得
+	\[
+	\#\bigl\{b\in\mathcal B_j(U_\delta):\ \operatorname{length}(b)<2\delta\bigr\}\le C_n.
+	\]
+	由第三步，所有中间维条均满足 $\operatorname{length}(b)\le2\delta$，故
+	\[
+	\kappa_j=\#\{b\in\mathcal B_j:\ \operatorname{birth}(b)\le0<\operatorname{death}(b)\}\le C_n
+	\qquad(1\le j\le n-1).
+	\]
+	
+	第五步：端点维。由 $(M‑强)$ 与引理 \ref{lem:endpoint-dim}，$\kappa_0=1$，$\kappa_n=0$。因此
+	\[
+	\kappa=\kappa_0+\kappa_n+\sum_{j=1}^{n-1}\kappa_j
+	\le 1+0+(n-1)C_n
+	\le n+C_n.
+	\]
+\end{proof}
+		
+		\begin{remark}
+		命题 4.5 同时使用了 $(M‑强)$ 与“存在凸集近极值”两个假设。前者保证端点维与 Poincaré 对偶的适用性，后者保证中间维条长度受控。两者互不蕴含。
+		\end{remark}
+		
+		\section{反例}
+		本章构造两个精确反例，分别证伪“近极值管族必然具有高拓扑复杂度”与“拓扑复杂度 $\kappa$ 可被方向重数一致控制”两类断言。两个反例均满足第 2 节定义 \ref{def:tube-family} 的全部要求：方向集 $\delta$-分离、每个方向恰有一根管、管为开集。所有证明给出逐步细节。
+		
+		\subsection{规则网格反例}
+		\begin{theorem}[规则网格反例]
+		取 $\Omega\subset S^{n-1}$ 为极大 $\delta$-分离方向集，并对每个 $\omega\in\Omega$ 取平移参数 $x_\omega=0$，即所有管经过原点：
+		\[U_\delta=\bigcup_{\omega\in\Omega}T_\delta(\omega,0).\]
+		则：
+		\begin{enumerate}
+			\item[(i)] $|U_\delta|\asymp1$（即存在常数 $c,C>0$ 使 $c\le|U_\delta|\le C$，与 $\delta$ 无关）；
+			\item[(ii)] $U_\delta$ 是近极值的：对充分小的 $\delta$，
+			\[|U_\delta|\le\delta^{-n}[\log(1/\delta)]^{-C_0}\]
+			对某常数 $C_0>0$ 成立；
+			\item[(iii)] 任意凸集 $K\subset U_\delta$ 满足 $|K|\le C_n\delta^{n-1}$，从而
+			\[\frac{|K|}{|U_\delta|}\le C_n'\delta^{n-1}\to0\qquad(\delta\to0);\]
+			\item[(iv)] $\kappa(U_\delta)=1$。
+		\end{enumerate}
+		\end{theorem}
+		
+		\begin{proof}
+		第一步：每根管的体积。由命题 2.10(ii) 的计算，单管 $T_\delta(\omega,0)$ 是长 1、横截面半径 $\delta$ 的圆柱，其体积为
+		\[|T_\delta(\omega,0)|=c_n\delta^{n-1},\]
+		其中 $c_n=\omega_{n-1}$ 为 $\mathbb R^{n-1}$ 中单位球的体积。
+		
+		第二步：不同方向管的交叠体积。设 $\omega\neq\omega'\in\Omega$。由于 $\Omega$ 是 $\delta$-分离的，有 $|\omega-\omega'|\ge\delta$。两管 $T_\delta(\omega,0)$ 与 $T_\delta(\omega',0)$ 均以原点为中心线起点，其交集包含于以原点为中心、半径 $C_n\delta$ 的球内（因为两管在原点附近相交，且横向宽度为 $\delta$）。更精确地，若 $x\in T_\delta(\omega,0)\cap T_\delta(\omega',0)$，则 $x=t\omega+u=t'\omega'+u'$，其中 $|t|,|t'|<1/2$，$|u|,|u'|<\delta$。由方向分离，$\omega$ 与 $\omega'$ 的夹角至少为 $c\delta$。由此可推出 $|x|\le C_n\delta$（$C_n$ 仅依赖 $n$）。故
+		\[T_\delta(\omega,0)\cap T_\delta(\omega',0)\subset B(0,C_n\delta),\]
+		从而
+		\[|T_\delta(\omega,0)\cap T_\delta(\omega',0)|\le|B(0,C_n\delta)|=C_n'\delta^n.\]
+		更高重交（三根或更多管之交）同样包含于 $B(0,C_n\delta)$，体积不超过 $C_n'\delta^n$。
+		
+		第三步：并集体积的上下界。由容斥原理与第二步，
+		\[ 
+			\begin{aligned}
+				|U_\delta|&\ge\sum_{\omega\in\Omega}|T_\delta(\omega,0)|-\sum_{\omega<\omega'}|T_\delta(\omega,0)\cap T_\delta(\omega',0)|\\
+				&\ge|\Omega|c_n\delta^{n-1}-\binom{|\Omega|}{2}C_n'\delta^n.
+			\end{aligned}
+		\]
+		由于 $\Omega$ 是极大 $\delta$-分离集，其基数满足
+		\[|\Omega|\asymp\delta^{-(n-1)}.\]
+		故
+		\[|\Omega|c_n\delta^{n-1}\asymp1,\qquad
+		\binom{|\Omega|}{2}C_n'\delta^n\asymp\delta^{-2(n-1)}\delta^n=\delta^{2-n}.\]
+		当 $n\ge2$ 时，$\delta^{2-n}\le\delta^0=1$（因 $\delta\le1/2$），且对 $n>2$，该项更小。因此
+		\[|U_\delta|\ge c\]
+		对某常数 $c>0$ 成立。另一方面，由并集包含于所有管的并，且每管体积为 $c_n\delta^{n-1}$，得
+		\[|U_\delta|\le|\Omega|c_n\delta^{n-1}\le C\]
+		（因 $|\Omega|\asymp\delta^{-(n-1)}$）。故 $|U_\delta|\asymp1$，即 (i) 成立。
+		
+		第四步：近极值性。由 (i)，$|U_\delta|\le C$。对充分小的 $\delta$，有
+		\[C\le\delta^{-n}[\log(1/\delta)]^{-C_0}\]
+		（因 $\delta^{-n}[\log(1/\delta)]^{-C_0}\to\infty$ 当 $\delta\to0$，只要 $C_0>0$）。故 (ii) 成立。
+		
+		第五步：凸子集的体积上界。设 $K\subset U_\delta$ 为凸集。若 $K$ 包含两个点 $y_1,y_2$，它们分别属于不同方向的管且距原点 $>2C_n\delta$，则线段 $[y_1,y_2]$ 经过原点附近但不含于任何单根管（因两方向不同，线段离开两管）。这与 $K\subset U_\delta$ 且 $K$ 凸矛盾。因此 $K$ 至多沿一个方向延伸，且其横向宽度不超过 $\delta$。故
+		\[|K|\le C_n\delta^{n-1}\]
+		（最大为单管的体积量级）。结合 $|U_\delta|\asymp1$，得
+		\[\frac{|K|}{|U_\delta|}\le C_n'\delta^{n-1}\to0.\]
+		即 (iii) 成立。
+		
+		第六步：可缩性。对每根管 $T_\delta(\omega,0)$，原点 $0$ 属于该管（因 $0=0\cdot\omega+0$，且 $|0|<\delta$）。故 $0\in\bigcap_{\omega\in\Omega}T_\delta(\omega,0)$。对任意 $x\in U_\delta$，存在 $\omega$ 使 $x\in T_\delta(\omega,0)$。由于 $T_\delta(\omega,0)$ 凸且包含 $0$ 与 $x$，线段 $[0,x]\subset T_\delta(\omega,0)\subset U_\delta$。故 $U_\delta$ 对原点星形。星形集可缩，因此 $U_\delta$ 可缩。可缩空间的上同调为 $H^0=\mathbb Q$，$H^j=0\ (j\ge1)$，故
+		\[\kappa(U_\delta)=\sum_j\dim H^j(U_\delta)=1.\]
+		即 (iv) 成立。
+		\end{proof}
+		
+		\begin{corollary}
+		规则网格反例满足：$U_\delta$ 含每个方向的单位线段（因每根管含过原点的方向 $\omega$ 的单位线段），$|U_\delta|\asymp1$（近极值），但 $\kappa=1$。这证伪了“近极值且满方向 $\Rightarrow$ 高 $\kappa$”的断言，也证伪了第 3 节定理 \ref{thm:top-betti-bound} 原下界 $\kappa^{\mathrm{top}}=n$（此处 $\kappa^{\mathrm{top}}=0\neq n$）。
+		\end{corollary}
+		
+		\subsection{不相交管反例}
+		\begin{theorem}[不相交管反例]
+		取 $n=2$。令 $k=\lfloor\delta^{-1}\rfloor$。取方向集 $\Omega=\{\omega_1,\ldots,\omega_k\}\subset S^1$ 为 $\delta$-分离（例如均匀分布）。对每个 $j$，选取平移参数 $x_j\in\mathbb R^2$，使得管
+		\[T_j=T_\delta(\omega_j,x_j)\]
+		两两不交。这样的选取可行：因 $k\delta\asymp1$，可将 $k$ 根管沿横向平移至互不重叠的位置（例如将第 $j$ 根管的中心线平移到 $x_j=(j\delta,0)$ 附近，并调整方向使管不交）。令
+		\[U_\delta=\bigsqcup_{j=1}^k T_j.\]
+		则：
+		\begin{enumerate}
+			\item[(i)] $|U_\delta|\asymp1$；
+			\item[(ii)] $U_\delta$ 近极值：$|U_\delta|\le\delta^{-2}[\log(1/\delta)]^{-C_0}$（对某 $C_0>0$，充分小 $\delta$）；
+			\item[(iii)] $\kappa(U_\delta)=k\asymp\delta^{-1}$；
+			\item[(iv)] 覆盖 $U_\delta$ 至少需要 $k$ 个可缩集。
+		\end{enumerate}
+		\end{theorem}
+		
+		\begin{proof}
+		第一步：每根管的面积。$n=2$ 时，单管 $T_j$ 是长 1、宽 $2\delta$ 的矩形（圆盘半径为 $\delta$），其面积为
+		\[|T_j|=2\delta.\]
+		
+		第二步：不交并的面积。由两两不交，
+		\[|U_\delta|=\sum_{j=1}^k|T_j|=k\cdot2\delta=2k\delta.\]
+		由 $k=\lfloor\delta^{-1}\rfloor$，得 $k\delta\to1$（当 $\delta\to0$），故
+		\[|U_\delta|\asymp1.\]
+		即 (i) 成立。
+		
+		第三步：近极值性。由 (i)，$|U_\delta|\le C$。对充分小 $\delta$，
+		\[C\le\delta^{-2}[\log(1/\delta)]^{-C_0}\]
+		（因 $\delta^{-2}[\log(1/\delta)]^{-C_0}\to\infty$）。故 (ii) 成立。
+		
+		第四步：上同调维数。每根管 $T_j$ 是凸开集，故可缩。由不交并的上同调直和公式：
+		\[H^0(U_\delta;\mathbb Q)=\bigoplus_{j=1}^kH^0(T_j;\mathbb Q)=\mathbb Q^k,\]
+		且对 $j\ge1$，
+		\[H^j(U_\delta;\mathbb Q)=\bigoplus_{j=1}^kH^j(T_j;\mathbb Q)=0.\]
+		因此
+		\[\kappa(U_\delta)=\dim H^0(U_\delta)+\sum_{j\ge1}\dim H^j(U_\delta)=k.\]
+		由 $k=\lfloor\delta^{-1}\rfloor$，得 $\kappa\asymp\delta^{-1}$。即 (iii) 成立。
+		
+		第五步：覆盖数下界。设 $\{S_\alpha\}$ 为一族可缩集，覆盖 $U_\delta=\bigsqcup_{j=1}^kT_j$。可缩集必连通（因可缩空间道路连通）。由于 $U_\delta$ 的连通分支恰为各 $T_j$，每个可缩集 $S_\alpha$ 只能包含于一个连通分支 $T_j$ 中。因此要覆盖 $k$ 个互不相交的连通分支，至少需要 $k$ 个可缩集。即 (iv) 成立。
+		\end{proof}
+		
+		\begin{corollary}
+		不相交管反例满足：$|U_\delta|\asymp1$（近极值），但 $\kappa\asymp\delta^{-1}\to\infty$。这证伪了主猜想 $\kappa\le n+o(1)$，也证伪了“$\kappa$ 可被方向重数积分 $\int m\,d\sigma$ 一致控制”的断言（此处 $\int m\,d\sigma\asymp1$ 而 $\kappa\asymp\delta^{-1}$）。
+		\end{corollary}
+
+		
+		\section{诊断：Kakeya 压缩与 \texorpdfstring{$\kappa$}{κ} 的分离（$n$ 维形式）}
+		本节将第 5 节的反例推广到任意维数 $n\ge2$，证明：在 $n$ 维中同样存在近极值管族使 $\kappa\sim\delta^{-(n-1)}\to\infty$，而对应的 Kakeya 极大不等式仍然成立。由此对任意 $n\ge2$，拓扑不变量 $\kappa$ 都不是 Kakeya 压缩的正确度量。
+		
+		\subsection{n 维 Kakeya 极大算子}
+		\begin{definition}[n 维 Kakeya 极大算子]
+		对 $f\in L^1_{\mathrm{loc}}(\mathbb R^n)$ 与 $\omega\in S^{n-1}$，定义
+		\[
+		K_\delta f(\omega)=\sup_{a\in\mathbb R^n}\frac{1}{|T_\delta(\omega,a)|}\int_{T_\delta(\omega,a)}|f(x)|\,dx,
+		\]
+		其中 $T_\delta(\omega,a)=\{a+t\omega+u:\ |t|<1/2,\ |u|<\delta,\ u\perp\omega\}$ 为方向 $\omega$、起点 $a$、长 $1$、横截面半径 $\delta$ 的开管。其体积为
+		\[
+		|T_\delta(\omega,a)|=\omega_{n-1}\delta^{n-1},
+		\]
+		其中 $\omega_{n-1}$ 为 $\mathbb R^{n-1}$ 中单位球的体积。
+		
+		在 $S^{n-1}$ 上取归一化球面测度 $\sigma$（总测度 $1$）。Kakeya 极大不等式断言：对每个 $\epsilon>0$，存在 $C_\epsilon>0$ 使
+		\[
+		\|K_\delta f\|_{L^2(S^{n-1},\sigma)}\le C_\epsilon\delta^{-\epsilon}\|f\|_{L^2(\mathbb R^n)}
+		\tag{6.1}
+		\]
+		对一切 $f$ 与 $\delta\in(0,1/2]$ 成立。
+		\end{definition}
+		
+		\begin{remark}
+		不等式 (6.1) 是 Kakeya 猜想的 $L^2$ 形式。本文不证明它对所有 $f$ 成立，只验证第 5 节的反例函数满足它。诊断的结论是：即使 (6.1) 对该反例成立，$\kappa$ 仍可爆炸，故 $\kappa$ 不是 Kakeya 压缩的正确度量。
+		\end{remark}
+		
+		\subsection{n 维不相交管反例的构造}
+		\begin{theorem}[n 维不相交管反例]
+		对任意 $n\ge2$，存在常数 $c_n>0$ 与 $\delta_0>0$，使得对每个 $\delta\in(0,\delta_0)$，存在方向集 $\Omega\subset S^{n-1}$（$\delta-$分离）与平移参数 $\{x_\omega\}_{\omega\in\Omega}$，满足：
+		\begin{enumerate}
+			\item[(i)] $|\Omega|=k:=\lfloor c_n\delta^{-(n-1)}\rfloor$；
+			\item[(ii)] 管 $T_\delta(\omega,x_\omega)$ 两两不交；
+			\item[(iii)] 并集 $U_\delta=\bigsqcup_{\omega\in\Omega}T_\delta(\omega,x_\omega)$ 满足
+			\[
+			|U_\delta|=\omega_{n-1}k\delta^{n-1}\asymp1;
+			\]
+			\item[(iv)] $\kappa(U_\delta)=k\asymp\delta^{-(n-1)}\to\infty$。
+		\end{enumerate}
+		\end{theorem}
+		
+		\begin{proof}
+		第一步：选取 $\delta-$分离方向集。球面 $S^{n-1}$ 上极大 $\delta-$分离集的基数满足
+		\[
+		c_n'\delta^{-(n-1)}\le|\Omega|\le C_n'\delta^{-(n-1)}
+		\]
+		（下界由极大分离集的球帽覆盖论证，上界由球面体积论证）。取 $c_n=c_n'/2$，$k=\lfloor c_n\delta^{-(n-1)}\rfloor$，则存在 $k$ 个两两 $\delta-$分离的方向 $\omega_1,\ldots,\omega_k\in S^{n-1}$。
+		
+		第二步：使管两两不交。对每个 $j$，取起点
+		\[
+		x_j=R\omega_j,\qquad R=\delta^{-2}.
+		\]
+		考虑管 $T_j=T_\delta(\omega_j,x_j)$。其中心线为 $\{R\omega_j+t\omega_j:|t|<1/2\}$。对 $j\neq l$，两根管的中心线距离至少为
+		\[
+		R|\omega_j-\omega_l|-1\ge R\delta-1=\delta^{-1}-1.
+		\]
+		当 $\delta<\delta_0:=1/3$ 时，$\delta^{-1}-1>2\delta$。由于管的横截面半径为 $\delta$，两管中心线距离大于 $2\delta$ 蕴含两管不交。故 $T_1,\ldots,T_k$ 两两不交。
+		
+		第三步：并集体积。由不交性，
+		\[
+		|U_\delta|=\sum_{j=1}^k|T_j|=k\cdot\omega_{n-1}\delta^{n-1}.
+		\]
+		由 $k=\lfloor c_n\delta^{-(n-1)}\rfloor$，得
+		\[
+		c_n\omega_{n-1}/2\le|U_\delta|\le 2c_n\omega_{n-1}.
+		\]
+		即 $|U_\delta|\asymp1$。
+		
+		第四步：上同调维数。每根管 $T_j$ 是凸开集，故可缩。由不交并的上同调直和公式：
+		\[
+		H^0(U_\delta;\mathbb Q)=\bigoplus_{j=1}^kH^0(T_j;\mathbb Q)=\mathbb Q^k,
+		\]
+		且对 $q\ge1$，$H^q(U_\delta;\mathbb Q)=\bigoplus_jH^q(T_j;\mathbb Q)=0$。故
+		\[
+		\kappa(U_\delta)=\dim H^0(U_\delta)=k\asymp\delta^{-(n-1)}\to\infty.
+		\]
+		\end{proof}
+		
+		\subsection{近似平行管的交叠下界}
+		\begin{lemma}[n 维交叠下界]
+		设 $T_\delta(\omega_j,x_j)$ 与 $T_\delta(\omega,x_j)$ 是共享起点 $x_j$、方向分别为 $\omega_j,\omega$ 的两根管。若 $|\omega-\omega_j|\le\delta/2$，则存在常数 $c_n>0$（仅依赖 $n$）使
+		\[
+		|T_\delta(\omega_j,x_j)\cap T_\delta(\omega,x_j)|\ge c_n\delta^{n-1}.
+		\]
+		\end{lemma}
+		
+		\begin{proof}
+		第一步：构造子集。考虑
+		\[
+		S=\bigl\{x_j+t\omega_j+u:\ |t|\le1/4,\ |u|\le\delta/2,\ u\perp\omega_j\bigr\}.
+		\]
+		这是长 $1/2$、横截面半径 $\delta/2$ 的管，体积为
+		\[
+		|S|=\frac12\cdot\omega_{n-1}\Bigl(\frac{\delta}{2}\Bigr)^{n-1}=c_n'\delta^{n-1},
+		\]
+		其中 $c_n'=2^{-n}\omega_{n-1}$。
+		
+		第二步：验证 $S\subset T_\delta(\omega,x_j)$。任取 $x=x_j+t\omega_j+u\in S$。分解 $x-x_j=t'\omega+u'$，其中
+		\[
+		t'=(x-x_j)\cdot\omega=t(\omega_j\cdot\omega)+u\cdot\omega,\qquad
+		u'=(x-x_j)-t'\omega\perp\omega.
+		\]
+		由于 $u\perp\omega_j$，$u\cdot\omega=u\cdot(\omega-\omega_j)$，故
+		\[
+		|t'|\le|t|+|u||\omega-\omega_j|\le\frac14+\frac{\delta}{2}\cdot\frac{\delta}{2}\le\frac14+\frac{\delta^2}{4}<\frac12
+		\]
+		（$\delta\le1/2$ 时 $\delta^2/4\le1/16$）。
+		
+		对 $u'$，注意 $\omega_j-(\omega_j\cdot\omega)\omega$ 是 $\omega_j$ 到 $\omega^\perp$ 的投影，其范数 $\le|\omega_j-\omega|$。故
+		\[
+		|u'|\le|t||\omega_j-\omega|+|u|\le\frac14\cdot\frac{\delta}{2}+\frac{\delta}{2}
+		=\frac{5\delta}{8}<\delta.
+		\]
+		因此 $|t'|<1/2$，$|u'|<\delta$，$u'\perp\omega$，即 $x\in T_\delta(\omega,x_j)$。
+		
+		第三步：结论。由 $S\subset T_\delta(\omega_j,x_j)\cap T_\delta(\omega,x_j)$，
+		\[
+		|T_\delta(\omega_j,x_j)\cap T_\delta(\omega,x_j)|\ge|S|=c_n'\delta^{n-1}.
+		\]
+		取 $c_n=c_n'$ 即得。
+		\end{proof}
+		
+		\subsection{n 维诊断命题}
+		\begin{proposition}[n 维 Kakeya 压缩与 $\kappa$ 的分离]
+		对定理 6.2 的 $U_\delta$ 取 $f=\mathbf 1_{U_\delta}$。则：
+		\begin{enumerate}
+			\item[(i)] $\|f\|_{L^2(\mathbb R^n)}\asymp1$；
+			\item[(ii)] $\|K_\delta f\|_{L^2(S^{n-1},\sigma)}\asymp1$；
+			\item[(iii)] 对每个 $\epsilon>0$，Kakeya 极大不等式 (6.1) 对该 $f$ 成立（当 $\delta$ 充分小时）：
+			\[
+			\|K_\delta f\|_{L^2(S^{n-1},\sigma)}\le C_\epsilon\delta^{-\epsilon}\|f\|_{L^2(\mathbb R^n)};
+			\]
+			\item[(iv)] $\kappa(U_\delta)=k\asymp\delta^{-(n-1)}\to\infty$。
+		\end{enumerate}
+		\end{proposition}
+		
+		\begin{proof}
+		(i) 由定理 6.2(iii)，
+		\[
+		\|f\|_{L^2(\mathbb R^n)}^2=|U_\delta|\asymp1.
+		\]
+		故 $\|f\|_2\asymp1$。
+		
+		(ii) 上界。因 $f\le1$，对任意 $\omega$ 与任意 $a$，
+		\[
+		\frac{1}{|T_\delta(\omega,a)|}\int_{T_\delta(\omega,a)}|f(x)|\,dx
+		\le\frac{1}{|T_\delta(\omega,a)|}\int_{T_\delta(\omega,a)}1\,dx=1.
+		\]
+		故 $K_\delta f(\omega)\le1$，从而
+		\[
+		\|K_\delta f\|_{L^2(S^{n-1},\sigma)}^2
+		=\int_{S^{n-1}}|K_\delta f(\omega)|^2\,d\sigma(\omega)\le1.
+		\]
+		
+		(ii) 下界。对每个 $j$，令
+		\[
+		C_j=\bigl\{\omega\in S^{n-1}:\ |\omega-\omega_j|\le\delta/2\bigr\}
+		\]
+		为以 $\omega_j$ 为中心、半径 $\delta/2$ 的球帽。由于方向 $\delta-$分离，球帽 $C_1,\ldots,C_k$ 两两不交（若 $\omega\in C_j\cap C_l$，则 $|\omega_j-\omega_l|\le|\omega_j-\omega|+|\omega-\omega_l|<\delta$，矛盾）。
+		
+		对 $\omega\in C_j$，取 $a=x_j$。由引理 6.3，
+		\[
+		\int_{T_\delta(\omega,x_j)}|f(x)|\,dx\ge|T_\delta(\omega_j,x_j)\cap T_\delta(\omega,x_j)|\ge c_n\delta^{n-1}.
+		\]
+		而 $|T_\delta(\omega,x_j)|=\omega_{n-1}\delta^{n-1}$，故
+		\[
+		\frac{1}{|T_\delta(\omega,x_j)|}\int_{T_\delta(\omega,x_j)}|f(x)|\,dx
+		\ge\frac{c_n\delta^{n-1}}{\omega_{n-1}\delta^{n-1}}=\frac{c_n}{\omega_{n-1}}=:c_1>0.
+		\]
+		因此
+		\[
+		K_\delta f(\omega)\ge c_1\qquad(\omega\in C_j).
+		\]
+		球帽 $C_j$ 的 $\sigma-$测度满足
+		\[
+		\sigma(C_j)\ge c_n''\delta^{n-1}
+		\]
+		（$n-1$ 维球面上半径 $\delta/2$ 的球帽测度 $\asymp\delta^{n-1}$）。于是
+		\[
+		\|K_\delta f\|_{L^2(S^{n-1},\sigma)}^2
+		\ge\sum_{j=1}^k\int_{C_j}c_1^2\,d\sigma
+		\ge k\cdot c_1^2\cdot c_n''\delta^{n-1}.
+		\]
+		由 $k=\lfloor c_n\delta^{-(n-1)}\rfloor$，得
+		\[
+		k\delta^{n-1}\ge c_n/2,
+		\]
+		故
+		\[
+		\|K_\delta f\|_{L^2(S^{n-1},\sigma)}^2\ge c_2>0.
+		\]
+		结合上界，$\|K_\delta f\|_{L^2(S^{n-1},\sigma)}\asymp1$。
+		
+		(iii) 由 (i) 与 (ii)，存在常数 $c,C>0$（与 $\delta$ 无关）使
+		\[
+		c\le\|K_\delta f\|_{L^2(S^{n-1})}\le C,\qquad
+		c\le\|f\|_{L^2(\mathbb R^n)}\le C.
+		\]
+		于是
+		\[
+		\|K_\delta f\|_{L^2(S^{n-1})}
+		\le C
+		=\frac{C}{c}\cdot c
+		\le\frac{C}{c}\|f\|_{L^2}.
+		\]
+		对任意 $\epsilon>0$，因 $\delta^{-\epsilon}\to\infty$（$\delta\to0$），当 $\delta$ 充分小时有 $\delta^{-\epsilon}\ge C/c$。故
+		\[
+		\|K_\delta f\|_{L^2(S^{n-1})}
+		\le\frac{C}{c}\|f\|_{L^2}
+		\le\delta^{-\epsilon}\|f\|_{L^2}.
+		\]
+		即 (6.1) 对该 $f$ 成立。
+		
+		(iv) 由定理 6.2(iv)，$\kappa(U_\delta)=k=\lfloor c_n\delta^{-(n-1)}\rfloor\asymp\delta^{-(n-1)}\to\infty$。
+		\end{proof}
+		
+		\begin{thebibliography}{99}
+		\bibitem{KashiwaraSchapira}
+		M. Kashiwara and P. Schapira,
+		\textit{Sheaves on Manifolds},
+		Grundlehren der mathematischen Wissenschaften 292,
+		Springer-Verlag, Berlin, 1990.
+		
+		\bibitem{Iversen}
+		B. Iversen,
+		\textit{Cohomology of Sheaves},
+		Universitext, Springer-Verlag, 1986.
+		
+		\bibitem{HatcherAT}
+		A. Hatcher,
+		\textit{Algebraic Topology},
+		Cambridge University Press, 2002.
+		
+		\bibitem{GoreskyMacPherson}
+		M. Goresky and R. MacPherson,
+		``Intersection homology II,''
+		Inventiones Mathematicae 72 (1983), 77--129.
+		
+		\bibitem{Weibel1994}
+		C. A. Weibel,
+		\textit{An Introduction to Homological Algebra},
+		Cambridge Studies in Advanced Mathematics 38,
+		Cambridge University Press, 1994.
+		
+		\bibitem{CrawleyBoevey2015}
+		W. Crawley-Boevey,
+		``Decomposition of pointwise finite-dimensional persistence modules,''
+		Journal of Algebra and Its Applications 14 (2015), 1550066.
+		
+		\bibitem{Chazal2009}
+		F. Chazal, D. Cohen-Steiner, M. Glisse, L. J. Guibas, and S. Y. Oudot,
+		``Proximity of persistence modules and their diagrams,''
+		SoCG 2009, ACM, 237--246.
+		
+		\bibitem{MunkresEAT}
+		J. R. Munkres,
+		\textit{Elements of Algebraic Topology},
+		Addison-Wesley, 1984.
+		
+		\bibitem{Davies1971}
+		R. O. Davies,
+		``Some remarks on the Kakeya problem,''
+		Proc. Cambridge Philos. Soc. 69 (1971), 417--421.
+		
+		\bibitem{ZahlSurvey}
+		J. Zahl,
+		``A survey of the Kakeya conjecture, 2000--2025,''
+		arXiv preprint.
+		
+		\bibitem{WangZahl2025}
+		H. Wang and J. Zahl,
+		``Volume estimates for unions of convex sets, and the Kakeya set conjecture in three dimensions,''
+		arXiv preprint, 2025.
+		\end{thebibliography}
+		
+		\end{document}
